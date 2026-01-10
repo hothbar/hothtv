@@ -3,10 +3,14 @@ import lombok.RequiredArgsConstructor;
 import org.hothtv.backend.common.error.NotFoundException;
 import org.hothtv.backend.titles.dto.CreateTitleRequest;
 import org.hothtv.backend.titles.model.Title;
+import org.hothtv.backend.titles.model.TitleCategory;
 import org.hothtv.backend.titles.model.TitleType;
+import org.hothtv.backend.titles.repository.CategoryRepository;
+import org.hothtv.backend.titles.repository.TitleCategoryRepository;
 import org.hothtv.backend.titles.repository.TitleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -16,6 +20,8 @@ import java.util.List;
 public class TitleService {
 
     private final TitleRepository titleRepository;
+    private final CategoryRepository categoryRepository;
+    private final TitleCategoryRepository titleCategoryRepository;
 
     @Transactional(readOnly = true)
     public List<Title> listTitles(TitleType type) {
@@ -49,9 +55,17 @@ public class TitleService {
 
     @Transactional
     public void addCategoryToTitle(Long titleId, Long categoryId) {
-        // Implement after you add Category + TitleCategory tables/entities
-        // For now, keep as a placeholder so endpoint exists.
-        // Later: validate both exist, then insert into title_category.
-        throw new UnsupportedOperationException("Not implemented yet. Add Category + TitleCategory first.");
+        // confirm both exist (nice 404 behavior)
+        if (!titleRepository.existsById(titleId)) {
+            throw new NotFoundException("Title not found: " + titleId);
+        }
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new NotFoundException("Category not found: " + categoryId);
+        }
+
+        // idempotent: if link exists, do nothing
+        TitleCategory link = new TitleCategory(titleId, categoryId);
+        titleCategoryRepository.save(link);
     }
+
 }
