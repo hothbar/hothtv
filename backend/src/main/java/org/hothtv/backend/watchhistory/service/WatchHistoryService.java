@@ -27,8 +27,12 @@ public class WatchHistoryService {
      */
     @Transactional
     public WatchHistory upsert(UpsertWatchHistoryRequest req) {
+        if (req.userId() == null || req.watchableId() == null) {
+            throw new IllegalArgumentException("userId and watchableId are required");
+        }
+
         int progress = (req.progressSeconds() == null) ? 0 : Math.max(req.progressSeconds(), 0);
-        boolean completed = (req.completed() != null) && req.completed();
+        boolean completed = Boolean.TRUE.equals(req.completed());
 
         WatchHistory wh = watchHistoryRepository
                 .findByUserIdAndWatchableId(req.userId(), req.watchableId())

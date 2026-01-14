@@ -3,7 +3,7 @@ import lombok.RequiredArgsConstructor;
 import org.hothtv.backend.common.error.NotFoundException;
 import org.hothtv.backend.titles.dto.CreateTitleRequest;
 import org.hothtv.backend.titles.model.Title;
-import org.hothtv.backend.titles.model.TitleCategory;
+import org.hothtv.backend.categories.model.TitleCategory;
 import org.hothtv.backend.titles.model.TitleType;
 import org.hothtv.backend.titles.repository.CategoryRepository;
 import org.hothtv.backend.titles.repository.TitleCategoryRepository;

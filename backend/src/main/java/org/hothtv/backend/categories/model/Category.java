@@ -1,4 +1,4 @@
-package org.hothtv.backend.titles.model;
+package org.hothtv.backend.categories.model;
 
 import jakarta.persistence.*;
 import lombok.*;

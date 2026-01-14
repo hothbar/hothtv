@@ -1,8 +1,8 @@
-package org.hothtv.backend.titles.controller;
+package org.hothtv.backend.categories.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.hothtv.backend.titles.dto.CreateCategoryRequest;
-import org.hothtv.backend.titles.model.Category;
+import org.hothtv.backend.categories.dto.CreateCategoryRequest;
+import org.hothtv.backend.categories.model.Category;
 import org.hothtv.backend.titles.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

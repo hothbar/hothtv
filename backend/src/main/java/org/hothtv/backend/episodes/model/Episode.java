@@ -1,12 +1,12 @@
-package org.hothtv.backend.titles.model;
+package org.hothtv.backend.episodes.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hothtv.backend.seasons.model.Season;
 
 @Entity
 @Table(name = "episode")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
 public class Episode {
 
     @Id
@@ -14,9 +14,8 @@ public class Episode {
     @Column(name = "episode_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "season_id", nullable = false)
-    private Season season;
+    @Column(name = "season_id", nullable = false)
+    private Long seasonId;
 
     @Column(name = "episode_number", nullable = false)
     private Integer episodeNumber;
