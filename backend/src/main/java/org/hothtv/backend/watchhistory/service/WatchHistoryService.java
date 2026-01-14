@@ -1,6 +1,8 @@
 package org.hothtv.backend.watchhistory.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hothtv.backend.common.error.NotFoundException;
+import org.hothtv.backend.watchables.repository.WatchableRepository;
 import org.hothtv.backend.watchhistory.dto.UpsertWatchHistoryRequest;
 import org.hothtv.backend.watchhistory.model.WatchHistory;
 import org.hothtv.backend.watchhistory.repository.WatchHistoryRepository;
@@ -15,37 +17,35 @@ public class WatchHistoryService {
 
     private final WatchHistoryRepository watchHistoryRepository;
 
+    // IMPORTANT: these validations prevent the FK crash you got
+    private final WatchableRepository watchableRepository;
+    private final org.hothtv.backend.users.repository.UserRepository userRepository; // adjust if your package differs
+
     @Transactional(readOnly = true)
     public List<WatchHistory> listByUser(Long userId) {
         return watchHistoryRepository.findByUserId(userId);
     }
 
-    /**
-     * Upsert by (userId, watchableId).
-     * - If row exists: update progress/completed
-     * - Else: create new row
-     */
     @Transactional
     public WatchHistory upsert(UpsertWatchHistoryRequest req) {
-        if (req.userId() == null || req.watchableId() == null) {
-            throw new IllegalArgumentException("userId and watchableId are required");
+        if (!userRepository.existsById(req.userId())) {
+            throw new NotFoundException("User not found: " + req.userId());
         }
-
-        int progress = (req.progressSeconds() == null) ? 0 : Math.max(req.progressSeconds(), 0);
-        boolean completed = Boolean.TRUE.equals(req.completed());
+        if (!watchableRepository.existsById(req.watchableId())) {
+            throw new NotFoundException("Watchable not found: " + req.watchableId());
+        }
 
         WatchHistory wh = watchHistoryRepository
                 .findByUserIdAndWatchableId(req.userId(), req.watchableId())
                 .orElseGet(() -> {
-                    WatchHistory fresh = new WatchHistory();
-                    fresh.setUserId(req.userId());
-                    fresh.setWatchableId(req.watchableId());
-                    return fresh;
+                    WatchHistory x = new WatchHistory();
+                    x.setUserId(req.userId());
+                    x.setWatchableId(req.watchableId());
+                    return x;
                 });
 
-        wh.setProgressSeconds(progress);
-        wh.setCompleted(completed);
-
+        wh.setProgressSeconds(req.progressSeconds());
+        wh.setCompleted(req.completed());
         return watchHistoryRepository.save(wh);
     }
 }
