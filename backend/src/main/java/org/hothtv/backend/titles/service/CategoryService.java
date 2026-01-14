@@ -2,8 +2,8 @@ package org.hothtv.backend.titles.service;
 
 import lombok.RequiredArgsConstructor;
 import org.hothtv.backend.common.error.NotFoundException;
-import org.hothtv.backend.titles.dto.CreateCategoryRequest;
-import org.hothtv.backend.titles.model.Category;
+import org.hothtv.backend.categories.dto.CreateCategoryRequest;
+import org.hothtv.backend.categories.model.Category;
 import org.hothtv.backend.titles.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

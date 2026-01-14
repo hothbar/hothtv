@@ -1,4 +1,4 @@
-package org.hothtv.backend.titles.dto;
+package org.hothtv.backend.categories.dto;
 
 public record CreateCategoryRequest(
         String name,
