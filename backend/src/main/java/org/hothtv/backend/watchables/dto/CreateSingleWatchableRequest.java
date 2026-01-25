@@ -1,8 +1,0 @@
-package org.hothtv.backend.watchables.dto;
-
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
-public record CreateSingleWatchableRequest(
-        @NotNull @Positive Long singleTitleId
-) {}
