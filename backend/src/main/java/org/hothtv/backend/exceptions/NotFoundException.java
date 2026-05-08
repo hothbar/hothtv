@@ -1,4 +1,4 @@
-package org.hothtv.backend.common.error;
+package org.hothtv.backend.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -8,5 +8,6 @@ public record CreateTitleRequestDto(
         TitleTypeModel type,
         String name,
         LocalDate releaseDate,
-        String description
+        String description,
+        Integer durationMinutes
 ) {}

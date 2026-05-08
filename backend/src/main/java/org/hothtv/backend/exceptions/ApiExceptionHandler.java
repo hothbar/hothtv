@@ -1,6 +1,5 @@
-package org.hothtv.backend.common.error;
+package org.hothtv.backend.exceptions;
 
-import org.hothtv.backend.common.error.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

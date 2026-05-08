@@ -1,7 +1,7 @@
 package org.hothtv.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hothtv.backend.common.error.NotFoundException;
+import org.hothtv.backend.exceptions.NotFoundException;
 import org.hothtv.backend.dto.CreatePlanRequestDto;
 import org.hothtv.backend.model.SubscriptionPlanModel;
 import org.hothtv.backend.repository.SubscriptionPlanRepository;

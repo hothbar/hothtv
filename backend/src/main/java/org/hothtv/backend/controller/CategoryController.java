@@ -6,6 +6,7 @@ import org.hothtv.backend.dto.CreateCategoryRequestDto;
 import org.hothtv.backend.dto.UpdateCategoryRequestDto;
 import org.hothtv.backend.model.CategoryModel;
 import org.hothtv.backend.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

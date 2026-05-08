@@ -1,7 +1,7 @@
 package org.hothtv.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hothtv.backend.common.error.NotFoundException;
+import org.hothtv.backend.exceptions.NotFoundException;
 import org.hothtv.backend.dto.AddCastRequestDto;
 import org.hothtv.backend.model.TitleCastModel;
 import org.hothtv.backend.model.TitleDirectorModel;

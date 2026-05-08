@@ -1,12 +1,14 @@
 package org.hothtv.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hothtv.backend.common.error.NotFoundException;
+import org.hothtv.backend.exceptions.NotFoundException;
 import org.hothtv.backend.model.EpisodeWatchableModel;
 import org.hothtv.backend.model.SingleWatchableModel;
 import org.hothtv.backend.model.WatchableKindModel;
 import org.hothtv.backend.model.WatchableModel;
+import org.hothtv.backend.repository.EpisodeRepository;
 import org.hothtv.backend.repository.EpisodeWatchableRepository;
+import org.hothtv.backend.repository.SingleTitleRepository;
 import org.hothtv.backend.repository.SingleWatchableRepository;
 import org.hothtv.backend.repository.WatchableRepository;
 import org.hothtv.backend.dto.WatchableDetailsResponseDto;
@@ -20,14 +22,12 @@ public class WatchableService {
     private final WatchableRepository watchableRepository;
     private final SingleWatchableRepository singleWatchableRepository;
     private final EpisodeWatchableRepository episodeWatchableRepository;
-
-    // Optional (recommended): validate referenced IDs exist
-    // private final SingleTitleRepository singleTitleRepository;
-    // private final EpisodeRepository episodeRepository;
+    private final SingleTitleRepository singleTitleRepository;
+    private final EpisodeRepository episodeRepository;
 
     @Transactional
     public WatchableModel createSingleWatchable(Long singleTitleId) {
-        // if (!singleTitleRepository.existsById(singleTitleId)) throw new NotFoundException("SingleTitle not found: " + singleTitleId);
+        if (!singleTitleRepository.existsById(singleTitleId)) throw new NotFoundException("SingleTitle not found: " + singleTitleId);
 
         WatchableModel w = new WatchableModel();
         w.setKind(WatchableKindModel.SINGLE);
@@ -43,7 +43,7 @@ public class WatchableService {
 
     @Transactional
     public WatchableModel createEpisodeWatchable(Long episodeId) {
-        // if (!episodeRepository.existsById(episodeId)) throw new NotFoundException("Episode not found: " + episodeId);
+        if (!episodeRepository.existsById(episodeId)) throw new NotFoundException("Episode not found: " + episodeId);
 
         WatchableModel w = new WatchableModel();
         w.setKind(WatchableKindModel.EPISODE);

@@ -5,7 +5,7 @@ import org.hothtv.backend.dto.CreateCategoryRequestDto;
 import org.hothtv.backend.dto.UpdateCategoryRequestDto;
 import org.hothtv.backend.model.CategoryModel;
 import org.hothtv.backend.repository.CategoryRepository;
-import org.hothtv.backend.common.error.NotFoundException;
+import org.hothtv.backend.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

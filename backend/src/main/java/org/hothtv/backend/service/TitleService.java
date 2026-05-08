@@ -1,11 +1,13 @@
 package org.hothtv.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hothtv.backend.model.SingleTitleModel;
 import org.hothtv.backend.model.TitleCategoryModel;
 import org.hothtv.backend.model.TitleCategoryIdModel;
 import org.hothtv.backend.repository.CategoryRepository;
+import org.hothtv.backend.repository.SingleTitleRepository;
 import org.hothtv.backend.repository.TitleCategoryRepository;
-import org.hothtv.backend.common.error.NotFoundException;
+import org.hothtv.backend.exceptions.NotFoundException;
 import org.hothtv.backend.dto.CreateTitleRequestDto;
 import org.hothtv.backend.model.TitleModel;
 import org.hothtv.backend.model.TitleTypeModel;
@@ -22,6 +24,7 @@ public class TitleService {
     private final TitleRepository titleRepository;
     private final CategoryRepository categoryRepository;
     private final TitleCategoryRepository titleCategoryRepository;
+    private final SingleTitleRepository singleTitleRepository;
 
     @Transactional(readOnly = true)
     public List<TitleModel> listTitles(TitleTypeModel type) {
@@ -37,12 +40,27 @@ public class TitleService {
 
     @Transactional
     public TitleModel createTitle(CreateTitleRequestDto req) {
+        if (req.type() == TitleTypeModel.SINGLE) {
+            if (req.durationMinutes() == null || req.durationMinutes() <= 0) {
+                throw new IllegalArgumentException("durationMinutes is required for SINGLE titles and must be > 0");
+            }
+        }
+
         TitleModel title = new TitleModel();
         title.setType(req.type());
         title.setName(req.name());
         title.setReleaseDate(req.releaseDate());
         title.setDescription(req.description());
-        return titleRepository.save(title);
+        title = titleRepository.save(title);
+
+        if (req.type() == TitleTypeModel.SINGLE) {
+            SingleTitleModel st = new SingleTitleModel();
+            st.setTitle(title);
+            st.setDurationMinutes(req.durationMinutes());
+            singleTitleRepository.save(st);
+        }
+
+        return title;
     }
 
     @Transactional
