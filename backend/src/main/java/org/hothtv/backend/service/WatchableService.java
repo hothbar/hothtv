@@ -57,6 +57,14 @@ public class WatchableService {
         return w;
     }
 
+    @Transactional
+    public void delete(Long watchableId) {
+        if (!watchableRepository.existsById(watchableId)) {
+            throw new NotFoundException("Watchable not found: " + watchableId);
+        }
+        watchableRepository.deleteById(watchableId);
+    }
+
     @Transactional(readOnly = true)
     public WatchableDetailsResponseDto getDetails(Long watchableId) {
         WatchableModel w = watchableRepository.findById(watchableId)

@@ -49,4 +49,12 @@ public class WatchHistoryService {
         wh.setCompleted(req.completed());
         return watchHistoryRepository.save(wh);
     }
+
+    @Transactional
+    public void delete(Long watchId) {
+        if (!watchHistoryRepository.existsById(watchId)) {
+            throw new NotFoundException("Watch history entry not found: " + watchId);
+        }
+        watchHistoryRepository.deleteById(watchId);
+    }
 }

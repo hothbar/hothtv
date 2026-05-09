@@ -23,9 +23,14 @@ public class WatchHistoryController {
         return watchHistoryService.upsert(req);
     }
 
-    // GET /api/watchhistory/user/{userId}
     @GetMapping("/user/{userId}")
     public List<WatchHistoryModel> list(@PathVariable Long userId) {
         return watchHistoryService.listByUser(userId);
+    }
+
+    @DeleteMapping("/{watchId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long watchId) {
+        watchHistoryService.delete(watchId);
     }
 }

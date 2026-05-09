@@ -3,6 +3,7 @@ package org.hothtv.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.hothtv.backend.exceptions.NotFoundException;
 import org.hothtv.backend.dto.CreateEpisodeRequestDto;
+import org.hothtv.backend.dto.UpdateEpisodeRequestDto;
 import org.hothtv.backend.model.EpisodeModel;
 import org.hothtv.backend.repository.EpisodeRepository;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,20 @@ public class EpisodeService {
     @Transactional(readOnly = true)
     public List<EpisodeModel> listForSeason(Long seasonId) {
         return episodeRepository.findBySeasonIdOrderByEpisodeNumberAsc(seasonId);
+    }
+
+    @Transactional(readOnly = true)
+    public EpisodeModel get(Long episodeId) {
+        return episodeRepository.findById(episodeId)
+                .orElseThrow(() -> new NotFoundException("Episode not found: " + episodeId));
+    }
+
+    @Transactional
+    public EpisodeModel update(Long episodeId, UpdateEpisodeRequestDto req) {
+        EpisodeModel e = get(episodeId);
+        if (req.name() != null && !req.name().isBlank()) e.setName(req.name().trim());
+        if (req.durationMinutes() != null && req.durationMinutes() > 0) e.setDurationMinutes(req.durationMinutes());
+        return episodeRepository.save(e);
     }
 
     @Transactional

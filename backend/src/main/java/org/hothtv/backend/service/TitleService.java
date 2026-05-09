@@ -2,13 +2,10 @@ package org.hothtv.backend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.hothtv.backend.model.SingleTitleModel;
-import org.hothtv.backend.model.TitleCategoryModel;
-import org.hothtv.backend.model.TitleCategoryIdModel;
-import org.hothtv.backend.repository.CategoryRepository;
 import org.hothtv.backend.repository.SingleTitleRepository;
-import org.hothtv.backend.repository.TitleCategoryRepository;
 import org.hothtv.backend.exceptions.NotFoundException;
 import org.hothtv.backend.dto.CreateTitleRequestDto;
+import org.hothtv.backend.dto.UpdateTitleRequestDto;
 import org.hothtv.backend.model.TitleModel;
 import org.hothtv.backend.model.TitleTypeModel;
 import org.hothtv.backend.repository.TitleRepository;
@@ -22,8 +19,6 @@ import java.util.List;
 public class TitleService {
 
     private final TitleRepository titleRepository;
-    private final CategoryRepository categoryRepository;
-    private final TitleCategoryRepository titleCategoryRepository;
     private final SingleTitleRepository singleTitleRepository;
 
     @Transactional(readOnly = true)
@@ -34,8 +29,23 @@ public class TitleService {
 
     @Transactional(readOnly = true)
     public TitleModel getTitle(Long id) {
-        return titleRepository.findById(id)
+        TitleModel title = titleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Title not found: " + id));
+        if (title.getType() == TitleTypeModel.SINGLE) {
+            singleTitleRepository.findById(id)
+                    .ifPresent(st -> title.setDurationMinutes(st.getDurationMinutes()));
+        }
+        return title;
+    }
+
+    @Transactional
+    public TitleModel updateTitle(Long id, UpdateTitleRequestDto req) {
+        TitleModel title = titleRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Title not found: " + id));
+        if (req.name() != null) title.setName(req.name());
+        if (req.releaseDate() != null) title.setReleaseDate(req.releaseDate());
+        if (req.description() != null) title.setDescription(req.description());
+        return titleRepository.save(title);
     }
 
     @Transactional
@@ -71,23 +81,4 @@ public class TitleService {
         titleRepository.deleteById(id);
     }
 
-    @Transactional
-    public void addCategoryToTitle(Long titleId, Long categoryId) {
-        if (!titleRepository.existsById(titleId)) {
-            throw new NotFoundException("Title not found: " + titleId);
-        }
-        if (!categoryRepository.existsById(categoryId)) {
-            throw new NotFoundException("Category not found: " + categoryId);
-        }
-
-        TitleCategoryIdModel id = new TitleCategoryIdModel(titleId, categoryId);
-
-        // idempotent: don't insert duplicate link
-        if (titleCategoryRepository.existsById(id)) return;
-
-        TitleCategoryModel link = new TitleCategoryModel();
-        link.setId(id);
-
-        titleCategoryRepository.save(link);
-    }
 }

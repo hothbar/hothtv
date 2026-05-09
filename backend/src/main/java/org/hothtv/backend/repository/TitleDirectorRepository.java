@@ -4,4 +4,8 @@ import org.hothtv.backend.model.TitleDirectorModel;
 import org.hothtv.backend.model.TitleDirectorIdModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TitleDirectorRepository extends JpaRepository<TitleDirectorModel, TitleDirectorIdModel> {}
+import java.util.List;
+
+public interface TitleDirectorRepository extends JpaRepository<TitleDirectorModel, TitleDirectorIdModel> {
+    List<TitleDirectorModel> findByTitleId(Long titleId);
+}

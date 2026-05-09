@@ -37,6 +37,9 @@ public class TitleModel {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Transient
+    private Integer durationMinutes;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = Instant.now();

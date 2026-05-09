@@ -2,6 +2,7 @@ package org.hothtv.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.hothtv.backend.dto.CreatePlanRequestDto;
+import org.hothtv.backend.dto.UpdatePlanRequestDto;
 import org.hothtv.backend.model.SubscriptionPlanModel;
 import org.hothtv.backend.service.SubscriptionPlanService;
 import org.springframework.http.HttpStatus;
@@ -13,15 +14,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/plans")
 public class SubscriptionPlanController {
-    // class member level
-    // constructor level
 
     private final SubscriptionPlanService planService;
 
-    // GET /api/plans
     @GetMapping
     public List<SubscriptionPlanModel> list() {
         return planService.listPlans();
+    }
+
+    @GetMapping("/{id}")
+    public SubscriptionPlanModel get(@PathVariable Long id) {
+        return planService.getPlan(id);
     }
 
     // POST /api/plans
@@ -31,7 +34,11 @@ public class SubscriptionPlanController {
         return planService.createPlan(req);
     }
 
-    // DELETE /api/plans/{id}
+    @PutMapping("/{id}")
+    public SubscriptionPlanModel update(@PathVariable Long id, @RequestBody UpdatePlanRequestDto req) {
+        return planService.updatePlan(id, req);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

@@ -33,4 +33,10 @@ public class WatchableController {
     public WatchableDetailsResponseDto getDetails(@PathVariable Long id) {
         return watchableService.getDetails(id);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        watchableService.delete(id);
+    }
 }

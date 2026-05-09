@@ -30,4 +30,15 @@ public class ApiExceptionHandler {
                 "message", ex.getMessage()
         );
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> conflict(IllegalStateException ex) {
+        return Map.of(
+                "timestamp", Instant.now().toString(),
+                "status", 409,
+                "error", "Conflict",
+                "message", ex.getMessage()
+        );
+    }
 }
