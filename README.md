@@ -1,6 +1,6 @@
 # HothTV — Streaming Platform API
 
-A full-stack streaming platform backend inspired by Netflix/Hulu, built with **Spring Boot 4** and **PostgreSQL**. Supports content cataloging, user subscriptions, cast/credits management, and watch-progress tracking.
+A full-stack streaming platform backend inspired by Netflix/Hulu, built with **Spring Boot 4** and **PostgreSQL**. Supports content cataloging, user subscriptions, cast/credits management, watch-progress tracking, and JWT-based authentication.
 
 ## Tech Stack
 
@@ -12,34 +12,39 @@ A full-stack streaming platform backend inspired by Netflix/Hulu, built with **S
 | Database | PostgreSQL |
 | Migrations | Flyway 10 |
 | Validation | Jakarta Bean Validation |
+| Security | Spring Security + JJWT 0.12.6 |
 | API Docs | SpringDoc OpenAPI (Swagger UI) |
 | Build | Maven |
 | Utilities | Lombok |
 
 ## Features
 
+- **JWT Authentication** — Stateless login via `POST /api/auth/login`; all protected endpoints require a `Bearer` token. Passwords stored as BCrypt hashes.
 - **Content Management** — CRUD for titles (movies and series), seasons, and episodes with nested resource relationships
 - **Polymorphic Watchables** — Unified watchable abstraction over single-title films and individual series episodes, enforced by PostgreSQL trigger functions
 - **Watch History & Progress** — Upsert-based tracking of per-user watch progress (seconds elapsed, completion status) across all content types
 - **Cast & Credits** — Many-to-many cast and director associations with character names and billing order
 - **Category Tagging** — Slug-based content categories with many-to-many title associations
 - **Subscription Plans** — Tiered subscription plans with status lifecycle (ACTIVE → CANCELED / EXPIRED), one-active-per-user enforced at the database level
-- **User Management** — User registration and retrieval with email uniqueness constraint
+- **User Management** — User registration, retrieval, and deletion with email uniqueness constraint
 
 ## Architecture
 
 ```
 src/main/java/org/hothtv/backend/
-├── controller/        # REST controllers (11 resources)
+├── controller/        # REST controllers (12 resources)
 ├── service/           # Business logic with @Transactional boundaries
 ├── repository/        # Spring Data JPA repositories (16 interfaces)
-├── entity/            # JPA-mapped domain objects (22 entities)
+├── model/             # JPA-mapped domain objects (22 models)
 ├── dto/               # Immutable Java record request/response DTOs
-└── common/error/      # Global @RestControllerAdvice exception handling
+├── security/          # JWT filter, JWT service, Spring Security config
+└── exceptions/        # Global @RestControllerAdvice exception handling
 ```
 
 **Design highlights:**
-- Clean layered architecture (Controller → Service → Repository → Entity)
+- Stateless security — no HTTP sessions, every request carries a signed JWT
+- `UserService` implements `UserDetailsService` for seamless Spring Security integration
+- Clean layered architecture (Controller → Service → Repository → Model)
 - Java records for concise, immutable DTOs
 - `@Transactional(readOnly = true)` on read-path service methods
 - `FetchType.LAZY` on associations to avoid N+1 queries
@@ -50,6 +55,7 @@ src/main/java/org/hothtv/backend/
 
 | Resource | Endpoints |
 |---|---|
+| `/api/auth` | Login — returns JWT token |
 | `/api/users` | Register and retrieve users |
 | `/api/titles` | Create, list, get, delete titles |
 | `/api/titles/{id}/seasons` | Manage seasons for a series |
@@ -61,8 +67,29 @@ src/main/java/org/hothtv/backend/
 | `/api/people` | People/cast/crew directory |
 | `/api/titles/{id}/credits` | Manage cast and director credits |
 | `/api/subscription-plans` | Subscription tier management |
+| `/api/subscriptions` | Manage user subscriptions |
+
+**Public endpoints** (no token required): `POST /api/auth/login`, `POST /api/users`, Swagger UI.
+All other endpoints require `Authorization: Bearer <token>`.
 
 Full interactive docs available at `http://localhost:8081/swagger-ui.html` when running locally.
+
+## Authentication Flow
+
+```
+POST /api/auth/login
+{ "email": "user@example.com", "password": "secret" }
+
+→ 200 OK
+{ "token": "<signed JWT>" }
+```
+
+Include the token on subsequent requests:
+```
+Authorization: Bearer <signed JWT>
+```
+
+Token lifetime is configured via `jwt.expiration-ms` (default 24 hours). The secret is a Base64-encoded HMAC-SHA key set via `jwt.secret`.
 
 ## Database Schema
 
@@ -85,8 +112,20 @@ Schema is version-controlled with Flyway migrations.
 psql -U postgres -c "CREATE DATABASE hothtv;"
 psql -U postgres -c "CREATE USER hothtv_user WITH PASSWORD 'yourpassword';"
 psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE hothtv TO hothtv_user;"
+```
 
+Configure `backend/src/main/resources/application.properties`:
+```properties
+spring.datasource.password=yourpassword
+
+# Generate a secure Base64 key for production — the default is for dev only
+jwt.secret=<base64-encoded-256-bit-key>
+jwt.expiration-ms=86400000
+```
+
+```bash
 # Run the app (Flyway migrations apply automatically)
+cd backend
 ./mvnw spring-boot:run
 ```
 
@@ -95,5 +134,15 @@ Server starts on `http://localhost:8081`.
 ## Running Tests
 
 ```bash
+cd backend
 ./mvnw test
 ```
+
+## Roadmap
+
+- [ ] **Role-based access control** — ADMIN vs USER roles; restrict content management endpoints to admins
+- [ ] **Token refresh** — `POST /api/auth/refresh` to extend sessions without re-login
+- [ ] **Frontend** — React/Next.js client consuming this API
+- [ ] **Search & filtering** — full-text title search, filter by category/cast/year
+- [ ] **Recommendations** — watch-history-based content suggestions
+- [ ] **Password reset** — email-based reset flow
