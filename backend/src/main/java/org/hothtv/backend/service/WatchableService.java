@@ -15,6 +15,8 @@ import org.hothtv.backend.dto.WatchableDetailsResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class WatchableService {
@@ -24,6 +26,11 @@ public class WatchableService {
     private final EpisodeWatchableRepository episodeWatchableRepository;
     private final SingleTitleRepository singleTitleRepository;
     private final EpisodeRepository episodeRepository;
+
+    @Transactional(readOnly = true)
+    public List<WatchableModel> listAll() {
+        return watchableRepository.findAll();
+    }
 
     @Transactional
     public WatchableModel createSingleWatchable(Long singleTitleId) {

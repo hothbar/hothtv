@@ -10,12 +10,19 @@ import org.hothtv.backend.service.WatchableService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/watchables")
 @RequiredArgsConstructor
 public class WatchableController {
 
     private final WatchableService watchableService;
+
+    @GetMapping
+    public List<WatchableModel> list() {
+        return watchableService.listAll();
+    }
 
     @PostMapping("/single")
     @ResponseStatus(HttpStatus.CREATED)

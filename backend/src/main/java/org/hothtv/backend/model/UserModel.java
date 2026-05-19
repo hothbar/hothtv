@@ -3,6 +3,7 @@ package org.hothtv.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -32,6 +33,7 @@ public class UserModel {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(name = "joined_at", nullable = false, insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "joined_at", nullable = false, updatable = false)
     private Instant joinedAt;
 }

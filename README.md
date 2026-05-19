@@ -61,13 +61,13 @@ src/main/java/org/hothtv/backend/
 | `/api/titles/{id}/seasons` | Manage seasons for a series |
 | `/api/titles/{id}/seasons/{id}/episodes` | Manage episodes within a season |
 | `/api/watchables` | Create and retrieve watchable items |
-| `/api/watch-history` | Upsert and list user watch progress |
+| `/api/watchhistory` | Upsert and list user watch progress |
 | `/api/categories` | Category CRUD with slug support |
 | `/api/titles/{id}/categories` | Assign categories to a title |
 | `/api/people` | People/cast/crew directory |
 | `/api/titles/{id}/credits` | Manage cast and director credits |
-| `/api/subscription-plans` | Subscription tier management |
-| `/api/subscriptions` | Manage user subscriptions |
+| `/api/plans` | Subscription tier management |
+| `/api/users/{id}/subscriptions` | Manage user subscriptions |
 
 **Public endpoints** (no token required): `POST /api/auth/login`, `POST /api/users`, Swagger UI.
 All other endpoints require `Authorization: Bearer <token>`.
